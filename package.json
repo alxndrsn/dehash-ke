@@ -2,6 +2,16 @@
   "name": "dehash-ke",
   "version": "1.0.1",
   "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "yarn lint && yarn test:mocha",
+    "test:mocha": "mocha test.js"
+  },
   "repository": "git@github.com:alxndrsn/dehash-ke.git",
-  "author": "alxndrsn <alxndrsn>"
+  "author": "alxndrsn <alxndrsn>",
+  "devDependencies": {
+    "chai": "4",
+    "eslint": "^9.1.1",
+    "mocha": "^10.4.0"
+  }
 }
