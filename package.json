@@ -13,5 +13,6 @@
     "chai": "4",
     "eslint": "^9.1.1",
     "mocha": "^10.4.0"
-  }
+  },
+  "license": "UNLICENSED"
 }
