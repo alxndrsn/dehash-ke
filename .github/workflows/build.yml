@@ -1,0 +1,17 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: node-module
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - run: corepack enable
+    - uses: actions/checkout@v4
+    - name: Use Node.js 20
+      uses: actions/setup-node@v4
+    - run: yarn install --immutable
+    - run: yarn test
