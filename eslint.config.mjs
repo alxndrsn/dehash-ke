@@ -11,6 +11,7 @@ export default [
       'no-undef-init': 'error',
       'no-unused-expressions': 'error',
       'semi': [ 'error', 'always' ],
+      'quotes': ['error', 'single'],
     },
   },
   {

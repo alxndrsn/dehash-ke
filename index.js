@@ -10,7 +10,7 @@ module.exports = async hash => {
   const hashes = await res.json();
   const phoneNumber = hashes[rest];
 
-  if(!phoneNumber) throw new Error(`Hash not found.`);
+  if(!phoneNumber) throw new Error('Hash not found.');
 
   return phoneNumber;
 };
