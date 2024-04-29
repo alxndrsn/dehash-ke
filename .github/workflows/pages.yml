@@ -34,6 +34,7 @@ jobs:
           node-version: 20
       - run: node ./src/build-pages.js
       - run: ls -al dist/v1/phone/*
+      - run: 'echo "API file size: $(du -hs dist/v1 | cut -f1)"'
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
