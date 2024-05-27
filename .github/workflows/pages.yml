@@ -36,6 +36,8 @@ jobs:
         run: sudo apt-get install jq shellcheck
       - name: Test
         run: shellcheck test.sh && ./test.sh
+      - name: Increase max file handles
+        run: sysctl -w kern.maxfiles=70000
       - name: Build Pages
         run: node --max-old-space-size=8192 ./src/build-pages.js
       - name: List generated files
