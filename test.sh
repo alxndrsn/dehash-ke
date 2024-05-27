@@ -1,0 +1,75 @@
+#!/bin/bash -eu
+set -o pipefail
+
+log() { echo >&2 "[test] $*"; }
+
+if [[ -n "${CI-}" ]]; then
+  # Work around "Error: EMFILE: too many open files ..."
+  sudo prlimit --pid $$ --nofile=128000
+fi
+
+hashDir=dist/v1/phone/sha256
+
+log "Running code..."
+DEV=1 node --trace_gc ./src/generate-hashes.js
+
+log "Checking generated file count..."
+fileCount="$(find "$hashDir" -type f | wc -l)"
+log "  Expected: 65536"
+log "    Actual: $fileCount"
+if ! [[ "$fileCount" -eq 65536 ]]; then
+  log "!!! Unexpected count for hash files!"
+  exit 1
+fi
+log "  OK!"
+
+log "Checking generated file sizes..."
+# N.B. du's "total" seems to be less reliable than adding the numbers
+du -ab "$hashDir" | head -n-1 | awk >&2 '
+  BEGIN {
+    x = 156065536
+  }
+  {
+    if(($1-1) % 78) {
+      print "!!! Unexpected file size " $1 " bytes for file: " $2
+      print "!!! This file may be corrupt!"
+      err=1
+    } else {
+      a += $1;
+    }
+  }
+  END {
+    if(err == 1) {
+      exit 1;
+    }
+    print "[test] Expected: " x;
+    print "[test]   Actual: " a;
+    if(a != x) {
+      print "!!! Unexpected total size for hash data!"
+      exit 1
+    }
+  }
+'
+log "  OK!"
+
+log "Checking known hashes..."
+check_hash() {
+  hash="$1"
+  expected="$2"
+  prefix="${1:0:4}"
+  key="${1:4}"
+  actual="$(jq -r ".\"$key\"" "$hashDir/$prefix.json")"
+  if [[ "$actual" != "$expected" ]]; then
+    echo "!!! Incorrect phone number found for '$hash'"
+    echo "!!!   Expected: $expected"
+    echo "!!!     Actual: $actual"
+    exit 1
+  fi
+}
+check_hash 000017e2e559c3533ec174952d2658014f5411753def36ab7031265350db8949 254110007012
+check_hash 0000d37ae3c7d7d040afcab0442233e599bf961831c90ba4c0c529eaabcd590e 254111823948
+check_hash ffff029424660707b57f209524b59a56ab23078995a6afcc3f329237ccbf92ab 254110101598
+check_hash ffff7704e9784eb116f36a59990638824d4ba81ff1f9677daa459d269bbf4547 254111987581
+log "  OK!"
+
+log "All OK!"

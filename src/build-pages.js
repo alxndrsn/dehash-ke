@@ -10,6 +10,10 @@ log('Static files copied OK.');
 
 require('./generate-hashes');
 
+fs.writeFileSync('dist/about.json', JSON.stringify({
+  published: new Date().toISOString(),
+}, null, 2));
+
 log('Completed OK.');
 
 function mkdirp(path) {

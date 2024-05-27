@@ -32,8 +32,12 @@ jobs:
         uses: actions/setup-node@v4.0.2
         with:
           node-version: 20
+      - name: Install dependencies
+        run: sudo apt-get install jq shellcheck
+      - name: Test
+        run: shellcheck test.sh && ./test.sh && rm -rf ./dist/
       - name: Build Pages
-        run: node ./src/build-pages.js
+        run: node --max-old-space-size=16384 ./src/build-pages.js
       - name: List generated files
         run: ls -al dist/v1/phone/*
       - name: Size Report
