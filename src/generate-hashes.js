@@ -23,6 +23,8 @@ for(const hashType of hashTypes) {
 log('Data structures built.');
 
 const prefixes = [
+  '254110',
+  '254111',
   '254740',
   '254741',
   '254742',
@@ -39,8 +41,6 @@ const prefixes = [
   '254797',
   '254798',
   '254799',
-  '254110',
-  '254111',
 ].filter((_, idx) => !process.env.DEV || idx < 2);
 
 log('Generating hashes...');
