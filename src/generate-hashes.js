@@ -10,18 +10,6 @@ const root = `dist/${apiPath}`;
 const prefLen = 4;
 const prefBits = Math.pow(16, prefLen);
 
-log('Building data structures for hash types:', hashTypes, '...');
-const hashes = {};
-for(const hashType of hashTypes) {
-  fs.mkdirSync(`${root}/${hashType}`, { recursive:true });
-  hashes[hashType] = {};
-  for(let i=0; i<prefBits; i++) {
-    const hex = hexify(i);
-    hashes[hashType][hex] = {};
-  }
-}
-log('Data structures built.');
-
 // List from: https://en.wikipedia.org/wiki/Telephone_numbers_in_Kenya#Mobile_operators
 const prefixes = [
   '254110',
@@ -87,6 +75,19 @@ const prefixes = [
   '254799',
 ].filter((_, idx) => !process.env.DEV || idx < 2);
 
+const files = {};
+for(const hashType of hashTypes) {
+  fs.mkdirSync(`${root}/${hashType}`, { recursive:true });
+  files[hashType] = {};
+  for(let i=0; i<prefBits; i++) {
+    const prefix = hexify(i);
+    const ws = fs.createWriteStream(`${root}/${hashType}/${prefix}.json`);
+    files[hashType][prefix] = { ws };
+    ws.write('{');
+  }
+}
+
+
 log('Generating hashes...');
 for(const prefix of prefixes) {
   for(let i=0; i<1_000_000; ++i) {
@@ -95,21 +96,27 @@ for(const prefix of prefixes) {
       const hash = crypto.createHash(hashType).update(num).digest('hex');
       const prefix = hash.substr(0, prefLen);
       const rest = hash.substr(prefLen);
-      hashes[hashType][prefix][rest] = num;
+
+      const f = files[hashType][prefix];
+      if(f.started) f.ws.write(',');
+      else f.started = true;
+
+      f.ws.write(`"${rest}":"${num}"`);
     }
   }
 }
 log('All hashes generated.');
 
-log('Generating data files...');
+log('Finalising data files...');
 for(const hashType of hashTypes) {
   for(let i=0; i<prefBits; i++) {
-    const hex = hexify(i);
-    const jsonPath = `${root}/${hashType}/${hex}.json`;
-    fs.writeFileSync(jsonPath, JSON.stringify(hashes[hashType][hex]));
+    const prefix = hexify(i);
+    const { ws } = files[hashType][prefix];
+    ws.write('}');
+    ws.close();
   }
 }
-log('Data files generated.');
+log('Data files finalised.');
 
 function hexify(x) {
   return x.toString(16).padStart(prefLen, '0');
