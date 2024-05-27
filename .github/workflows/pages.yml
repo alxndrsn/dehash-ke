@@ -33,7 +33,7 @@ jobs:
         with:
           node-version: 20
       - name: Build Pages
-        run: node ./src/build-pages.js
+        run: node --max-old-space-size=8192 ./src/build-pages.js
       - name: List generated files
         run: ls -al dist/v1/phone/*
       - name: Size Report
