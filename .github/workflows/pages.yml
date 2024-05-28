@@ -32,14 +32,14 @@ jobs:
         uses: actions/setup-node@v4.0.2
         with:
           node-version: 20
-      - name: Install dependencies
-        run: sudo apt-get install jq shellcheck
-      - name: Test
-        run: shellcheck test.sh && ./test.sh
       - name: Increase max file handles (attempt 1)
         run: sysctl -w kern.maxfiles=128000
       - name: Increase max file handles (attempt 2)
         run: echo fs.inotify.max_user_watches=128000 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+      - name: Install dependencies
+        run: sudo apt-get install jq shellcheck
+      - name: Test
+        run: shellcheck test.sh && ./test.sh
       - name: Build Pages
         run: node --max-old-space-size=8192 ./src/build-pages.js
       - name: List generated files
