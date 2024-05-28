@@ -89,7 +89,7 @@ async function generateHashes() {
     files[hashType] = {};
     for(let i=0; i<prefBits; i++) {
       const prefix = hexify(i);
-      const ws = fs.createWriteStream(`${root}/${hashType}/${prefix}.json`);
+      const ws = fs.createWriteStream(`${root}/${hashType}/${prefix}.json`, { flush:true });
       files[hashType][prefix] = { ws };
       ws.write('{');
     }
