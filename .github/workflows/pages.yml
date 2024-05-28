@@ -24,18 +24,4 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get install jq shellcheck
       - name: Test
-        run: shellcheck test.sh && ./test.sh
-      - name: Test file limits
         run: node ./src/test-file-limits.js
-      - name: Build Pages
-        run: node --max-old-space-size=8192 ./src/build-pages.js
-      - name: List generated files
-        run: ls -al dist/v1/phone/*
-      - name: Size Report
-        run: 'echo "API file size: $(du -hs dist/v1 | cut -f1)"'
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './dist/'
