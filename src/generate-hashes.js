@@ -75,48 +75,57 @@ const prefixes = [
   '254799',
 ].filter((_, idx) => !process.env.DEV || idx < 2);
 
-const files = {};
-for(const hashType of hashTypes) {
-  fs.mkdirSync(`${root}/${hashType}`, { recursive:true });
-  files[hashType] = {};
-  for(let i=0; i<prefBits; i++) {
-    const prefix = hexify(i);
-    const ws = fs.createWriteStream(`${root}/${hashType}/${prefix}.json`);
-    files[hashType][prefix] = { ws };
-    ws.write('{');
-  }
-}
+generateHashes()
+  .then(() => log('Completed OK.'))
+  .catch(err => {
+    log('Failed:', err);
+    process.exit(1);
+  });
 
-
-log('Generating hashes...');
-for(const prefix of prefixes) {
-  for(let i=0; i<1_000_000; ++i) {
-    const num = prefix + i.toString().padStart(6, '0');
-    for(const hashType of hashTypes) {
-      const hash = crypto.createHash(hashType).update(num).digest('hex');
-      const prefix = hash.substr(0, prefLen);
-      const rest = hash.substr(prefLen);
-
-      const f = files[hashType][prefix];
-      if(f.started) f.ws.write(',');
-      else f.started = true;
-
-      f.ws.write(`"${rest}":"${num}"`);
+async function generateHashes() {
+  const files = {};
+  for(const hashType of hashTypes) {
+    fs.mkdirSync(`${root}/${hashType}`, { recursive:true });
+    files[hashType] = {};
+    for(let i=0; i<prefBits; i++) {
+      const prefix = hexify(i);
+      const ws = fs.createWriteStream(`${root}/${hashType}/${prefix}.json`);
+      files[hashType][prefix] = { ws };
+      ws.write('{');
     }
   }
-}
-log('All hashes generated.');
 
-log('Finalising data files...');
-for(const hashType of hashTypes) {
-  for(let i=0; i<prefBits; i++) {
-    const prefix = hexify(i);
-    const { ws } = files[hashType][prefix];
-    ws.write('}');
-    ws.close();
+
+  log('Generating hashes...');
+  for(const prefix of prefixes) {
+    for(let i=0; i<1_000_000; ++i) {
+      const num = prefix + i.toString().padStart(6, '0');
+      for(const hashType of hashTypes) {
+        const hash = crypto.createHash(hashType).update(num).digest('hex');
+        const prefix = hash.substr(0, prefLen);
+        const rest = hash.substr(prefLen);
+
+        const f = files[hashType][prefix];
+        if(f.started) f.ws.write(',');
+        else f.started = true;
+
+        f.ws.write(`"${rest}":"${num}"`);
+      }
+    }
   }
-}
-log('Data files finalised.');
+  log('All hashes generated.');
+
+  log('Finalising data files...');
+  for(const hashType of hashTypes) {
+    for(let i=0; i<prefBits; i++) {
+      const prefix = hexify(i);
+      const { ws } = files[hashType][prefix];
+      ws.write('}');
+      await new Promise(resolve => ws.close(resolve));
+    }
+  }
+  log('Data files finalised.');
+};
 
 function hexify(x) {
   return x.toString(16).padStart(prefLen, '0');
