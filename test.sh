@@ -3,6 +3,11 @@ set -o pipefail
 
 log() { echo >&2 "[test] $*"; }
 
+log "File limit (soft):"
+ulimit -n
+log "File limit (hard):"
+ulimit -Hn
+
 hashDir=dist/v1/phone/sha256
 
 log "Running code..."
