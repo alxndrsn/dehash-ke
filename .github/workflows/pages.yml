@@ -21,8 +21,11 @@ jobs:
         uses: actions/setup-node@v4.0.2
         with:
           node-version: 20
+      - run: whoami
+      - run: ulimit -n
       - run: ulimit -Hn
-      - run: sudo ulimit -n 128000
+      - run: sed -i 's/nofile 65536/nofile 128000/' /etc/security/limits.conf
+      - run: ulimit -n
       - run: ulimit -Hn
       - run: ulimit -a
       - run: cat /etc/systemd/user.conf
