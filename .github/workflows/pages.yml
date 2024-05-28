@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: 20
       - run: ulimit -Hn
-      - run: ulimit -n 128000
+      - run: sudo ulimit -n 128000
       - run: ulimit -Hn
       - run: ulimit -a
       - run: cat /etc/systemd/user.conf
