@@ -21,7 +21,6 @@ jobs:
         uses: actions/setup-node@v4.0.2
         with:
           node-version: 20
-      - run: sudo sed -i 's/nofile 65536/nofile 128000/' /etc/security/limits.conf
       - name: Install dependencies
         run: sudo apt-get install jq shellcheck
       - name: Test
