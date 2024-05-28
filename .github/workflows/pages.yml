@@ -27,6 +27,8 @@ jobs:
         run: sudo apt-get install jq shellcheck
       - name: Test
         run: shellcheck test.sh && ./test.sh
+      - name: Test file limits
+        run: node ./src/test-file-limits.js
       - name: Build Pages
         run: node --max-old-space-size=8192 ./src/build-pages.js
       - name: List generated files
