@@ -21,8 +21,6 @@ jobs:
         uses: actions/setup-node@v4.0.2
         with:
           node-version: 20
-      - name: Increase max file handles (attempt 1)
-        run: sysctl -w kern.maxfiles=128000
       - name: Increase max file handles (attempt 2)
         run: echo fs.inotify.max_user_watches=128000 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
       - name: Install dependencies
