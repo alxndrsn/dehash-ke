@@ -3,10 +3,6 @@ set -o pipefail
 
 log() { echo >&2 "[test] $*"; }
 
-log "File limit (soft):"
-ulimit -n
-log "File limit (hard):"
-ulimit -Hn
 if [[ -n "${CI-}" ]]; then
   sudo prlimit --pid $$ --nofile=128000
 fi
@@ -18,7 +14,8 @@ DEV=1 node ./src/generate-hashes.js
 
 log "Checking generated file count..."
 fileCount="$(find "$hashDir" -type f | wc -l)"
-log "  Got: $fileCount"
+log "  Expected: 65536"
+log "    Actual: $fileCount"
 if ! [[ "$fileCount" -eq 65536 ]]; then
   log "!!! Unexpected count for hash files!"
   exit 1
@@ -27,7 +24,8 @@ log "  OK!"
 
 log "Checking generated file size..."
 totalSize="$(du -sb "$hashDir" | cut -f1)"
-log "  Got: $totalSize"
+log "    Actual: $totalSize"
+log "  Expected: 157978368"
 if ! [[ "$totalSize" -eq 157978368 ]]; then
   log "!!! Unexpected size for hash data!"
   exit 1
