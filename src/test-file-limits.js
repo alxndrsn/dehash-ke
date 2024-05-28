@@ -2,8 +2,11 @@ const fs = require('node:fs');
 
 let i=0;
 
-while(true) {
+next();
+
+function next() {
   ++i;
   const ws = fs.createWriteStream(i + '.test');
   ws.write('hi');
+  setTimeout(next, 1);
 }
