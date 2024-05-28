@@ -23,13 +23,34 @@ fi
 log "  OK!"
 
 log "Checking generated file size..."
-totalSize="$(du -sb "$hashDir" | cut -f1)"
-log "    Actual: $totalSize"
-log "  Expected: 157978368"
-if ! [[ "$totalSize" -eq 157978368 ]]; then
-  log "!!! Unexpected size for hash data!"
-#  exit 1
-fi
+# N.B. du's "total" seems to be less reliable than adding the numbers
+du -ab "$hashDir" | head -n-1 | awk >&2 '
+  BEGIN {
+    x = 156065536
+  }
+  {
+    if(($1-1) % 78) {
+      print "!!!"
+      print "!!! Unexpected file size " $1 " bytes for file: " $2
+      print "!!! This file may be corrupt!"
+      print "!!!"
+      err=1
+    } else {
+      a += $1;
+    }
+  }
+  END {
+    if(err == 1) {
+      exit 1;
+    }
+    print "[test] Expected: " x;
+    print "[test]   Actual: " a;
+    if(a != x) {
+      print "!!! Unexpected size for hash data!"
+      exit 1
+    }
+  }
+'
 log "  OK!"
 
 log "Checking known hashes..."
