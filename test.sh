@@ -7,7 +7,7 @@ log "File limit (soft):"
 ulimit -n
 log "File limit (hard):"
 ulimit -Hn
-prlimit --pid $$ --nofile=128000
+sudo prlimit --pid $$ --nofile=128000
 
 hashDir=dist/v1/phone/sha256
 
