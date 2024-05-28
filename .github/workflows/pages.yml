@@ -37,4 +37,4 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get install jq shellcheck
       - name: Test
-        run: bash -c ./test.sh
+        run: bash ./test.sh
