@@ -24,7 +24,7 @@ jobs:
       - run: whoami
       - run: ulimit -n
       - run: ulimit -Hn
-      - run: sed -i 's/nofile 65536/nofile 128000/' /etc/security/limits.conf
+      - run: sudo sed -i 's/nofile 65536/nofile 128000/' /etc/security/limits.conf
       - run: ulimit -n
       - run: ulimit -Hn
       - run: ulimit -a
