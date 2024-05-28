@@ -22,7 +22,7 @@ if ! [[ "$fileCount" -eq 65536 ]]; then
 fi
 log "  OK!"
 
-log "Checking generated file size..."
+log "Checking generated file sizes..."
 # N.B. du's "total" seems to be less reliable than adding the numbers
 du -ab "$hashDir" | head -n-1 | awk >&2 '
   BEGIN {
