@@ -22,6 +22,7 @@ jobs:
         with:
           node-version: 20
       - run: ulimit -Hn
+      - run: ulimit -a
       - run: cat /etc/systemd/user.conf
       - run: cat /etc/security/limits.conf
       - name: Install dependencies
