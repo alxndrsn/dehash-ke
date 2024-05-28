@@ -37,4 +37,4 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get install jq shellcheck
       - name: Test
-        run: node --max-old-space-size=8192 ./src/test-file-limits.js
+        run: bash -c node --max-old-space-size=8192 ./src/test-file-limits.js
