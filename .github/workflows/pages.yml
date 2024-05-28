@@ -22,11 +22,15 @@ jobs:
         with:
           node-version: 20
       - run: whoami
+      - run: bash -c ulimit -n
+      - run: bash -c ulimit -Hn
       - run: ulimit -n
       - run: ulimit -Hn
       - run: sudo sed -i 's/nofile 65536/nofile 128000/' /etc/security/limits.conf
       - run: ulimit -n
       - run: ulimit -Hn
+      - run: bash -c ulimit -n
+      - run: bash -c ulimit -Hn
       - run: ulimit -a
       - run: cat /etc/systemd/user.conf
       - run: cat /etc/security/limits.conf
