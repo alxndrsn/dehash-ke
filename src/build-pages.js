@@ -1,3 +1,4 @@
+const { execSync } = require('node:child_process');
 const fs = require('node:fs');
 const log = require('./log')('build-pages');
 
@@ -11,6 +12,7 @@ log('Static files copied OK.');
 require('./generate-hashes');
 
 fs.writeFileSync('dist/about.json', JSON.stringify({
+  git_treeish: execSync('git rev-parse --verify HEAD').toString().trim(),
   published: new Date().toISOString(),
 }, null, 2));
 
