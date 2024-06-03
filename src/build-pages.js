@@ -14,6 +14,7 @@ require('./generate-hashes');
 fs.writeFileSync('dist/about.json', JSON.stringify({
   git_treeish: execSync('git rev-parse --verify HEAD').toString().trim(),
   published: new Date().toISOString(),
+  supported_prefixes: require('./prefixes'),
 }, null, 2));
 
 log('Completed OK.');
